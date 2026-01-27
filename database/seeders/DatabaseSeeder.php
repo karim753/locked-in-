@@ -15,11 +15,29 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call([
+            PeriodSeeder::class,
+            KeuzedeelSeeder::class,
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Create test users
+        \App\Models\User::factory()->create([
+            'name' => 'Student User',
+            'email' => 'student@example.com',
+            'role' => 'student',
+            'study_program' => 'Software Development',
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'role' => 'admin',
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'SLB User',
+            'email' => 'slb@example.com',
+            'role' => 'slber',
         ]);
     }
 }
