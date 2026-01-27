@@ -7,7 +7,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h1 class="text-4xl font-bold text-white mb-4">{{ $keuzedeel->title }}</h1>
-            <p class="text-xl text-purple-100">{{ $keuzedeel->period->name }}</p>
+            <p class="text-xl text-white">{{ $keuzedeel->period->name }}</p>
         </div>
     </div>
 </div>
@@ -61,8 +61,8 @@
                         <div class="text-2xl font-bold text-blue-600">{{ $keuzedeel->min_participants }}</div>
                         <div class="text-sm text-gray-600">Minimum nodig</div>
                     </div>
-                    <div class="text-center p-4 bg-purple-50 rounded-lg">
-                        <div class="text-2xl font-bold text-purple-600">{{ $keuzedeel->max_participants }}</div>
+                    <div class="text-center p-4 bg-primary bg-opacity-10 rounded-lg">
+                        <div class="text-2xl font-bold text-primary">{{ $keuzedeel->max_participants }}</div>
                         <div class="text-sm text-gray-600">Maximum capaciteit</div>
                     </div>
                 </div>
@@ -87,8 +87,8 @@
                         @foreach($keuzedeel->inscriptions as $inscription)
                             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                 <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                                        <i class="fas fa-user text-purple-600 text-sm"></i>
+                                    <div class="w-8 h-8 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-primary text-sm"></i>
                                     </div>
                                     <div>
                                         <div class="font-medium text-gray-800">{{ $inscription->user->name }}</div>
@@ -181,7 +181,7 @@
                 @else
                     <div class="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                         <p class="text-sm text-gray-700 mb-3">Log in om u in te schrijven voor keuzedelen.</p>
-                        <a href="{{ route('login') }}" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium text-center block transition">
+                        <a href="{{ route('login') }}" class="w-full bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm font-medium text-center block transition">
                             <i class="fas fa-sign-in-alt mr-2"></i>Inloggen
                         </a>
                     </div>
@@ -220,8 +220,8 @@
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">Docent</h3>
                     <div class="flex items-center">
-                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-user-tie text-purple-600"></i>
+                        <div class="w-12 h-12 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user-tie text-primary"></i>
                         </div>
                         <div>
                             <div class="font-medium text-gray-800">{{ $keuzedeel->teacher_name }}</div>

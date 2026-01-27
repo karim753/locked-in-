@@ -9,6 +9,8 @@ class CompletedKeuzedeel extends Model
 {
     use HasFactory;
 
+    protected $table = 'completed_keuzedelen';
+
     protected $fillable = [
         'user_id',
         'keuzdeel_id',

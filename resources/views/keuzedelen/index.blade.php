@@ -7,7 +7,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h1 class="text-4xl font-bold text-white mb-4">Keuzedelen</h1>
-            <p class="text-xl text-purple-100">Kies uw keuzedeel voor de komende periode</p>
+            <p class="text-xl text-white">Kies uw keuzedeel voor de komende periode</p>
         </div>
     </div>
 </div>
@@ -31,7 +31,7 @@
                 </div>
                 <div class="text-right">
                     <div class="text-sm text-gray-500">Huidige inschrijvingen</div>
-                    <div class="text-2xl font-bold text-purple-600">{{ $userInscriptions->whereIn('status', ['pending', 'confirmed'])->count() }}</div>
+                    <div class="text-2xl font-bold text-primary">{{ $userInscriptions->whereIn('status', ['pending', 'confirmed'])->count() }}</div>
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
                                     <!-- Action Buttons -->
                                     <div class="flex space-x-2">
                                         <a href="{{ route('keuzedelen.show', $keuzedeel) }}" 
-                                           class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium text-center transition">
+                                           class="flex-1 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm font-medium text-center transition">
                                             <i class="fas fa-info-circle mr-2"></i>Details
                                         </a>
 
