@@ -95,7 +95,7 @@ class User extends Authenticatable
     public function hasEnrollmentInPeriod($periodId)
     {
         return $this->inscriptions()
-                   ->whereHas('keuzedeel', function ($query) use ($periodId) {
+                   ->whereHas('keuzdeel', function ($query) use ($periodId) {
                        $query->where('period_id', $periodId);
                    })
                    ->whereIn('status', ['pending', 'confirmed'])
@@ -108,7 +108,7 @@ class User extends Authenticatable
     public function getCurrentEnrollment($periodId)
     {
         return $this->inscriptions()
-                   ->whereHas('keuzedeel', function ($query) use ($periodId) {
+                   ->whereHas('keuzdeel', function ($query) use ($periodId) {
                        $query->where('period_id', $periodId);
                    })
                    ->whereIn('status', ['pending', 'confirmed'])

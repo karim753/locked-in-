@@ -13,8 +13,8 @@ return new class extends Migration
             $table->string('name');
             $table->date('start_date');
             $table->date('end_date');
-            $table->timestamp('enrollment_opens_at');
-            $table->timestamp('enrollment_closes_at');
+            $table->timestamp('enrollment_opens_at')->nullable();
+            $table->timestamp('enrollment_closes_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             

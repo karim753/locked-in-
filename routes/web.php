@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KeuzedeelController;
+use App\Http\Controllers\Admin\AdminController;
 
 // Home page - shows welcome for guests, redirects for authenticated users
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -20,6 +21,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
+    
+    Route::post('/delete-all-keuzedelen', [AdminController::class, 'deleteAllKeuzedelen'])->name('delete-all-keuzedelen');
 });
 
 // SLB routes (require authentication and slber role)

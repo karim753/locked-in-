@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('completed_keuzedelen', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('keuzdeel_id')->constrained()->onDelete('cascade');
+            $table->foreignId('keuzdeel_id')->constrained('keuzedelen')->onDelete('cascade');
             $table->date('completion_date');
             $table->string('grade')->nullable();
             $table->text('remarks')->nullable();

@@ -30,6 +30,6 @@ class CompletedKeuzedeel extends Model
 
     public function keuzdeel()
     {
-        return $this->belongsTo(Keuzedeel::class);
+        return $this->belongsTo(Keuzedeel::class, 'keuzdeel_id');
     }
 }

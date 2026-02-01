@@ -9,6 +9,8 @@ class Inscription extends Model
 {
     use HasFactory;
 
+    protected $table = 'inscriptions';
+
     protected $fillable = [
         'user_id',
         'keuzdeel_id',
@@ -28,7 +30,7 @@ class Inscription extends Model
 
     public function keuzdeel()
     {
-        return $this->belongsTo(Keuzedeel::class);
+        return $this->belongsTo(Keuzedeel::class, 'keuzdeel_id');
     }
 
     public function isConfirmed()

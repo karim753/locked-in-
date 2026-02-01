@@ -36,12 +36,12 @@ class Keuzedeel extends Model
 
     public function inscriptions()
     {
-        return $this->hasMany(Inscription::class);
+        return $this->hasMany(Inscription::class, 'keuzdeel_id');
     }
 
     public function completedKeuzedelen()
     {
-        return $this->hasMany(CompletedKeuzedeel::class);
+        return $this->hasMany(CompletedKeuzedeel::class, 'keuzdeel_id');
     }
 
     public function currentEnrollments()
@@ -76,13 +76,25 @@ class Keuzedeel extends Model
             return false;
         }
 
-        if (!$this->is_repeatable && $user->hasCompletedKeuzedeel($this->id)) {
+        // Check if user already has an active inscription for this keuzedeel
+        $hasActiveInscription = $user->inscriptions()
+            ->where('keuzdeel_id', $this->id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
+
+        if ($hasActiveInscription) {
             return false;
         }
 
-        if ($user->hasEnrollmentInPeriod($this->period_id)) {
+        // Check if user has already completed this keuzedeel
+        if ($user->hasCompletedKeuzedeel($this->id)) {
             return false;
         }
+
+        // Check if user has enrollment in period (REMOVED - allow multiple keuzedelen per period)
+        // if ($user->hasEnrollmentInPeriod($this->period_id)) {
+        //     return false;
+        // }
 
         return true;
     }

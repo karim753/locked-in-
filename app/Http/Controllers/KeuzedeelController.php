@@ -64,28 +64,26 @@ class KeuzedeelController extends Controller
             }
 
             // Check capacity
-            $currentEnrollments = $keuzdeel->currentEnrollments();
+            $currentEnrollments = $keuzedeel->currentEnrollments();
             
             if ($currentEnrollments >= $keuzedeel->max_participants) {
                 return back()->with('error', 'Dit keuzedeel is vol.');
             }
 
             // Create inscription
-            $status = $currentEnrollments >= $keuzedeel->min_participants ? 'confirmed' : 'pending';
+            $status = 'confirmed'; // Always confirmed since min=1
             
             Inscription::create([
                 'user_id' => $user->id,
                 'keuzdeel_id' => $keuzedeel->id,
                 'status' => $status,
+                'priority' => 1,
+                'inscribed_at' => now(),
             ]);
 
             DB::commit();
 
-            $message = $status === 'confirmed' 
-                ? 'Inschrijving succesvol bevestigd!' 
-                : 'Inschrijving ontvangen. U wordt geplaatst op de wachtlijst totdat het minimum aantal deelnemers is bereikt.';
-
-            return back()->with('success', $message);
+            return back()->with('success', 'Inschrijving succesvol bevestigd!');
 
         } catch (\Exception $e) {
             DB::rollBack();

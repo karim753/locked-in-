@@ -123,6 +123,9 @@
                             <a href="{{ route('login') }}" class="bg-white text-primary px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors inline-flex items-center">
                                 <i class="fas fa-sign-in-alt mr-2"></i>Inloggen om keuzedelen te bekijken
                             </a>
+                            <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary-hover transition-colors inline-flex items-center">
+                                <i class="fas fa-user-plus mr-2"></i>Nieuw account aanmaken
+                            </a>
                         </div>
                     @endauth
                 </div>
@@ -207,8 +210,8 @@
                         <i class="fas fa-arrow-right mr-2"></i>Bekijk keuzedelen
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="bg-white text-primary px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors inline-flex items-center">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Inloggen en starten
+                    <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary-hover transition-colors inline-flex items-center">
+                        <i class="fas fa-user-plus mr-2"></i>Nieuw account aanmaken
                     </a>
                 @endauth
             </div>
