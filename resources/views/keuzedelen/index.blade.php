@@ -62,13 +62,13 @@
                 @if($period->keuzedelen->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach($period->keuzedelen as $keuzedeel)
-                            <div class="bg-white rounded-lg shadow-md card-hover overflow-hidden">
+                            <div class="bg-white rounded-lg shadow-md card-hover overflow-hidden @if(isset($availabilityReasons[$keuzedeel->id]) && !$availabilityReasons[$keuzedeel->id]['available']) opacity-75 @endif">
                                 <!-- Status Badge -->
                                 <div class="relative">
                                     @if(!$keuzedeel->is_active)
                                         <div class="absolute top-2 right-2 z-10">
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                Inactief
+                                                <i class="fas fa-pause-circle mr-1"></i> Inactief
                                             </span>
                                         </div>
                                     @endif
@@ -76,10 +76,20 @@
                                     @if(in_array($keuzedeel->id, $completedKeuzedelen))
                                         <div class="absolute top-2 left-2 z-10">
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                <i class="fas fa-check mr-1"></i> Afgerond
+                                                <i class="fas fa-graduation-cap mr-1"></i> Afgerond
                                             </span>
                                         </div>
                                     @endif
+
+                                    @auth
+                                        @if(Auth::user()->isStudent() && isset($availabilityReasons[$keuzedeel->id]) && !$availabilityReasons[$keuzedeel->id]['available'] && !in_array($keuzedeel->id, $completedKeuzedelen))
+                                            <div class="absolute top-2 left-2 z-10">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    <i class="fas {{ $availabilityReasons[$keuzedeel->id]['icon'] }} mr-1"></i> {{ $availabilityReasons[$keuzedeel->id]['message'] }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    @endauth
                                 </div>
 
                                 <!-- Card Content -->
@@ -127,7 +137,7 @@
                                             @if(Auth::user()->isStudent())
                                                 @php
                                                     $userInscription = $userInscriptions->where('keuzdeel_id', $keuzedeel->id)->first();
-                                                    $canEnroll = $keuzedeel->isAvailableForUser(Auth::user());
+                                                    $availabilityInfo = isset($availabilityReasons[$keuzedeel->id]) ? $availabilityReasons[$keuzedeel->id] : null;
                                                 @endphp
 
                                                 @if($userInscription && $userInscription->status === 'confirmed')
@@ -138,25 +148,34 @@
                                                     <span class="flex-1 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-md text-sm font-medium text-center">
                                                         <i class="fas fa-clock mr-2"></i>Wachtlijst
                                                     </span>
-                                                @elseif($canEnroll && $period->isEnrollmentOpen())
+                                                @elseif($availabilityInfo && $availabilityInfo['available'] && $period->isEnrollmentOpen())
                                                     <form action="{{ route('keuzedelen.enroll', $keuzedeel) }}" method="POST" class="flex-1">
                                                         @csrf
                                                         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">
                                                             <i class="fas fa-plus mr-2"></i>Inschrijven
                                                         </button>
                                                     </form>
-                                                @elseif($keuzedeel->isFull())
-                                                    <span class="flex-1 bg-red-100 text-red-800 px-4 py-2 rounded-md text-sm font-medium text-center">
-                                                        <i class="fas fa-times mr-2"></i>Vol
-                                                    </span>
-                                                @elseif(!$period->isEnrollmentOpen())
-                                                    <span class="flex-1 bg-gray-100 text-gray-800 px-4 py-2 rounded-md text-sm font-medium text-center">
-                                                        <i class="fas fa-lock mr-2"></i>Gesloten
-                                                    </span>
                                                 @else
-                                                    <span class="flex-1 bg-gray-100 text-gray-800 px-4 py-2 rounded-md text-sm font-medium text-center">
-                                                        <i class="fas fa-ban mr-2"></i>Niet beschikbaar
-                                                    </span>
+                                                    @if($availabilityInfo && !$availabilityInfo['available'])
+                                                        @php
+                                                            $buttonColors = [
+                                                                'inactief' => 'bg-gray-100 text-gray-800',
+                                                                'inschrijving_gesloten' => 'bg-gray-100 text-gray-800',
+                                                                'al_ingeschreven' => 'bg-blue-100 text-blue-800',
+                                                                'afgerond' => 'bg-blue-100 text-blue-800',
+                                                                'al_anders_ingeschreven' => 'bg-orange-100 text-orange-800',
+                                                                'vol' => 'bg-red-100 text-red-800'
+                                                            ];
+                                                            $colorClass = $buttonColors[$availabilityInfo['reason']] ?? 'bg-gray-100 text-gray-800';
+                                                        @endphp
+                                                        <span class="flex-1 {{ $colorClass }} px-4 py-2 rounded-md text-sm font-medium text-center">
+                                                            <i class="fas {{ $availabilityInfo['icon'] }} mr-2"></i>{{ $availabilityInfo['message'] }}
+                                                        </span>
+                                                    @else
+                                                        <span class="flex-1 bg-gray-100 text-gray-800 px-4 py-2 rounded-md text-sm font-medium text-center">
+                                                            <i class="fas fa-ban mr-2"></i>Niet beschikbaar
+                                                        </span>
+                                                    @endif
                                                 @endif
                                             @endif
                                         @endauth

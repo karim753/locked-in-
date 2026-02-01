@@ -91,10 +91,10 @@ class Keuzedeel extends Model
             return false;
         }
 
-        // Check if user has enrollment in period (REMOVED - allow multiple keuzedelen per period)
-        // if ($user->hasEnrollmentInPeriod($this->period_id)) {
-        //     return false;
-        // }
+        // Check if user has enrollment in period (allow only one keuzedeel per period)
+        if ($user->hasEnrollmentInPeriod($this->period_id)) {
+            return false;
+        }
 
         return true;
     }

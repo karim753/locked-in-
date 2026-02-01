@@ -21,8 +21,18 @@ class KeuzedeelController extends Controller
 
         $userInscriptions = $user ? $user->inscriptions()->with('keuzdeel.period')->get() : collect();
         $completedKeuzedelen = $user ? $user->completedKeuzedelen()->pluck('keuzdeel_id')->toArray() : [];
+        
+        // Check availability reasons for each keuzedeel
+        $availabilityReasons = [];
+        if ($user && $user->isStudent()) {
+            foreach ($periods as $period) {
+                foreach ($period->keuzedelen as $keuzedeel) {
+                    $availabilityReasons[$keuzedeel->id] = $this->getAvailabilityReason($keuzedeel, $user);
+                }
+            }
+        }
 
-        return view('keuzedelen.index', compact('periods', 'userInscriptions', 'completedKeuzedelen'));
+        return view('keuzedelen.index', compact('periods', 'userInscriptions', 'completedKeuzedelen', 'availabilityReasons'));
     }
 
     public function show(Keuzedeel $keuzedeel)
@@ -47,6 +57,15 @@ class KeuzedeelController extends Controller
         }
 
         if (!$keuzedeel->isAvailableForUser($user)) {
+            // Check if user already has an active enrollment in any period
+            $hasActiveEnrollment = $user->inscriptions()
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->exists();
+            
+            if ($hasActiveEnrollment) {
+                return back()->with('error', 'U kunt slechts voor één keuzedeel tegelijk ingeschreven staan. Annuleer eerst uw huidige inschrijving.');
+            }
+            
             return back()->with('error', 'Inschrijving niet mogelijk voor dit keuzedeel.');
         }
 
@@ -111,5 +130,81 @@ class KeuzedeelController extends Controller
         $inscription->update(['status' => 'cancelled']);
 
         return back()->with('success', 'Uw inschrijving is geannuleerd.');
+    }
+
+    /**
+     * Get the reason why a keuzedeel is not available for a user
+     */
+    private function getAvailabilityReason($keuzedeel, $user)
+    {
+        if (!$keuzedeel->is_active) {
+            return [
+                'available' => false,
+                'reason' => 'inactief',
+                'message' => 'Dit keuzedeel is inactief',
+                'icon' => 'fa-pause-circle'
+            ];
+        }
+
+        if (!$keuzedeel->period->isEnrollmentOpen()) {
+            return [
+                'available' => false,
+                'reason' => 'inschrijving_gesloten',
+                'message' => 'Inschrijving is gesloten',
+                'icon' => 'fa-lock'
+            ];
+        }
+
+        // Check if user already has an active inscription for this keuzedeel
+        $hasActiveInscription = $user->inscriptions()
+            ->where('keuzdeel_id', $keuzedeel->id)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
+
+        if ($hasActiveInscription) {
+            return [
+                'available' => false,
+                'reason' => 'al_ingeschreven',
+                'message' => 'U bent al ingeschreven',
+                'icon' => 'fa-check-circle'
+            ];
+        }
+
+        // Check if user has already completed this keuzedeel
+        if ($user->hasCompletedKeuzedeel($keuzedeel->id)) {
+            return [
+                'available' => false,
+                'reason' => 'afgerond',
+                'message' => 'Alles afgerond',
+                'icon' => 'fa-graduation-cap'
+            ];
+        }
+
+        // Check if user has enrollment in period (only one keuzedeel per period)
+        if ($user->hasEnrollmentInPeriod($keuzedeel->period_id)) {
+            return [
+                'available' => false,
+                'reason' => 'al_anders_ingeschreven',
+                'message' => 'Al ingeschreven voor ander keuzedeel',
+                'icon' => 'fa-exchange-alt'
+            ];
+        }
+
+        // Check if keuzedeel is full
+        if ($keuzedeel->isFull()) {
+            return [
+                'available' => false,
+                'reason' => 'vol',
+                'message' => 'Dit keuzedeel is vol',
+                'icon' => 'fa-times-circle'
+            ];
+        }
+
+        return [
+            'available' => true,
+            'reason' => 'beschikbaar',
+            'message' => 'Beschikbaar',
+            'icon' => 'fa-check-circle'
+        ];
     }
 }
