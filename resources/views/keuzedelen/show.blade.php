@@ -5,9 +5,14 @@
 @section('content')
 <div class="gradient-bg py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <h1 class="text-4xl font-bold text-white mb-4">{{ $keuzedeel->title }}</h1>
-            <p class="text-xl text-white">{{ $keuzedeel->period->name }}</p>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-white mb-4">{{ $keuzedeel->title }}</h1>
+                <p class="text-xl text-white">{{ $keuzedeel->period->name }}</p>
+            </div>
+            <a href="{{ route('keuzedelen.index') }}" class="btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i>Terug naar overzicht
+            </a>
         </div>
     </div>
 </div>

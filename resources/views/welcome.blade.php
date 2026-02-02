@@ -18,58 +18,115 @@
                 --primary: #2ecc71;
                 --primary-hover: #27ae60;
                 --secondary: #16a085;
-                --light-gray: #f5f5f5;
+                --accent: #27ae60;
+                --success: #2ecc71;
+                --warning: #f39c12;
+                --danger: #e74c3c;
             }
             body {
                 font-family: 'Inter', sans-serif;
             }
-            .bg-primary {
-                background-color: var(--primary);
-            }
-            .bg-secondary {
-                background-color: var(--secondary);
-            }
-            .text-primary {
-                color: var(--primary);
-            }
-            .text-secondary {
-                color: var(--secondary);
-            }
-            .hover\:bg-primary:hover {
-                background-color: var(--primary-hover);
-            }
             .gradient-bg {
-                background: linear-gradient(135deg, #2ecc71 0%, #16a085 100%);
+                background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             }
             .card-hover {
                 transition: all 0.3s ease;
             }
             .card-hover:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                transform: translateY(-8px);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            }
+            .btn-primary {
+                background: var(--primary);
+                color: white;
+                padding: 0.75rem 2rem;
+                border-radius: 0.5rem;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                border: none;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+            }
+            .btn-primary:hover {
+                background: var(--primary-hover);
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(46, 204, 113, 0.3);
+            }
+            .btn-secondary {
+                background: white;
+                color: var(--primary);
+                padding: 0.75rem 2rem;
+                border-radius: 0.5rem;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                border: 2px solid var(--primary);
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+            }
+            .btn-secondary:hover {
+                background: var(--primary);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(46, 204, 113, 0.3);
+            }
+            .feature-icon {
+                width: 4rem;
+                height: 4rem;
+                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                border-radius: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 10px 25px -5px rgba(46, 204, 113, 0.2);
+            }
+            .nav-blur {
+                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.95);
+            }
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-20px); }
+            }
+            .float-animation {
+                animation: float 6s ease-in-out infinite;
             }
         </style>
     </head>
     <body class="min-h-screen bg-gray-50">
         <!-- Navigation -->
-        <nav class="bg-white shadow-lg">
+        <nav class="nav-blur shadow-lg sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
-                        <i class="fas fa-graduation-cap text-primary text-2xl mr-3"></i>
-                        <h1 class="text-xl font-bold text-gray-800">TCR Keuzedeel Systeem</h1>
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-graduation-cap text-white text-lg"></i>
+                        </div>
+                        <h1 class="text-xl font-bold text-gray-900">TCR Keuzedeel Systeem</h1>
                     </div>
                     <div class="flex items-center space-x-4">
                         @auth
-                            <span class="text-gray-700">{{ Auth::user()->name }}</span>
-                            <form method="POST" action="{{ route('logout') }}" class="inline">
-                                @csrf
-                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Uitloggen
-                                </button>
-                            </form>
+                            <div class="flex items-center space-x-3">
+                                <div class="text-right">
+                                    <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name }}</p>
+                                    <p class="text-xs text-gray-500">{{ ucfirst(Auth::user()->role) }}</p>
+                                </div>
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-white text-sm"></i>
+                                </div>
+                                <form method="POST" action="{{ route('logout') }}" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-2" title="Uitloggen">
+                                        <i class="fas fa-sign-out-alt text-xl"></i>
+                                    </button>
+                                </form>
+                            </div>
                         @else
-                            <a href="{{ route('login') }}" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm font-medium transition">
+                            <a href="{{ route('login') }}" class="btn-primary">
                                 <i class="fas fa-sign-in-alt mr-2"></i>Inloggen
                             </a>
                         @endauth
@@ -80,51 +137,60 @@
 
         <!-- Flash Messages -->
         @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
+            <div class="bg-green-50 border-l-4 border-green-400 p-4 m-6">
                 <div class="flex">
                     <div class="flex-shrink-0">
-                        <i class="fas fa-check-circle"></i>
+                        <i class="fas fa-check-circle text-green-400"></i>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm">{{ session('success') }}</p>
+                        <p class="text-sm text-green-700">{{ session('success') }}</p>
                     </div>
                 </div>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 m-6">
                 <div class="flex">
                     <div class="flex-shrink-0">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm">{{ session('error') }}</p>
+                        <p class="text-sm text-red-700">{{ session('error') }}</p>
                     </div>
                 </div>
             </div>
         @endif
 
         <!-- Hero Section -->
-        <div class="gradient-bg py-20">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="gradient-bg py-24 relative overflow-hidden">
+            <div class="absolute inset-0 bg-black opacity-10"></div>
+            <!-- Animated Background Elements -->
+            <div class="absolute top-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full float-animation"></div>
+            <div class="absolute top-32 right-20 w-16 h-16 bg-white opacity-10 rounded-full float-animation" style="animation-delay: 2s;"></div>
+            <div class="absolute bottom-20 left-32 w-12 h-12 bg-white opacity-10 rounded-full float-animation" style="animation-delay: 4s;"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 <div class="text-center">
-                    <h1 class="text-5xl font-bold text-white mb-6">Techniek College Rotterdam</h1>
-                    <p class="text-xl text-white mb-4">Keuzedeel Systeem</p>
-                    <p class="text-lg text-white mb-8 max-w-3xl mx-auto">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full mb-6">
+                        <i class="fas fa-graduation-cap text-white text-3xl"></i>
+                    </div>
+                    <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Techniek College Rotterdam</h1>
+                    <p class="text-2xl text-white mb-8 font-light">Keuzedeel Systeem</p>
+                    <p class="text-xl text-white mb-12 max-w-3xl mx-auto leading-relaxed">
                         Kies je keuzedeel voor de komende periode en verrijk je opleiding met interessante specialisaties
                     </p>
                     @auth
-                        <a href="{{ route('keuzedelen.index') }}" class="bg-white text-primary px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors inline-flex items-center">
+                        <a href="{{ route('keuzedelen.index') }}" class="btn-secondary">
                             <i class="fas fa-arrow-right mr-2"></i>Bekijk beschikbare keuzedelen
                         </a>
                     @else
                         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                            <a href="{{ route('login') }}" class="bg-white text-primary px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors inline-flex items-center">
-                                <i class="fas fa-sign-in-alt mr-2"></i>Inloggen om keuzedelen te bekijken
+                            <a href="{{ route('login') }}" class="btn-secondary">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Inloggen
                             </a>
-                            <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary-hover transition-colors inline-flex items-center">
-                                <i class="fas fa-user-plus mr-2"></i>Nieuw account aanmaken
+                            <a href="{{ route('register') }}" class="btn-primary">
+                                <i class="fas fa-user-plus mr-2"></i>Account aanmaken
                             </a>
                         </div>
                     @endauth
@@ -133,106 +199,84 @@
         </div>
 
         <!-- Features Section -->
-        <div class="py-16">
+        <div class="py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Waarom keuzedelen bij TCR?</h2>
-                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-6">Waarom keuzedelen bij TCR?</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
                         Verbreed je kennis en ontwikkel specifieke vaardigheden die aansluiten bij jouw interesses en de arbeidsmarkt
                     </p>
                 </div>
                 <div class="grid md:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                        <div class="w-12 h-12 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                            <i class="fas fa-user-graduate text-primary text-xl"></i>
+                    <div class="bg-white rounded-2xl shadow-xl p-8 card-hover border border-gray-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-graduate text-white text-2xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Persoonlijke ontwikkeling</h3>
-                        <p class="text-gray-600">Kies keuzedelen die passen bij jouw interesses en carrièredoelen.</p>
+                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Persoonlijke ontwikkeling</h3>
+                        <p class="text-gray-600 leading-relaxed">Ontwikkel je talenten en interesses met keuzedelen die passen bij jouw persoonlijke doelen en ambities.</p>
                     </div>
-                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                        <div class="w-12 h-12 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                            <i class="fas fa-briefcase text-primary text-xl"></i>
+                    <div class="bg-white rounded-2xl shadow-xl p-8 card-hover border border-gray-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-briefcase text-white text-2xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Betere baankansen</h3>
-                        <p class="text-gray-600">Ontwikkel specifieke vaardigheden die werkgevers zoeken.</p>
+                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Carrière voordeel</h3>
+                        <p class="text-gray-600 leading-relaxed">Versterk je CV met speciale vaardigheden die werkgevers zoeken in de technische sector.</p>
                     </div>
-                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
-                        <div class="w-12 h-12 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-                            <i class="fas fa-certificate text-primary text-xl"></i>
+                    <div class="bg-white rounded-2xl shadow-xl p-8 card-hover border border-gray-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-users text-white text-2xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Extra certificaten</h3>
-                        <p class="text-gray-600">Behaal erkende certificaten naast je diploma.</p>
+                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Expertise vergroten</h3>
+                        <p class="text-gray-600 leading-relaxed">Word expert in jouw vakgebied met gespecialiseerde kennis en praktische ervaring.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Process Section -->
-        <div class="bg-gray-100 py-16">
+        <!-- Stats Section -->
+        <div class="py-20 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Hoe werkt het bij TCR?</h2>
-                    <p class="text-lg text-gray-600">In 3 eenvoudige stappen naar jouw ideale keuzedeel</p>
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-6">Cijfers in één oogopslag</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                        Ontdek de impact van ons keuzedeel systeem
+                    </p>
                 </div>
-                <div class="grid md:grid-cols-3 gap-8">
+                <div class="grid md:grid-cols-4 gap-8">
                     <div class="text-center">
-                        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-white text-2xl font-bold">1</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Bekijk aanbod</h3>
-                        <p class="text-gray-600">Ontdek alle beschikbare keuzedelen voor de komende periode</p>
+                        <div class="text-5xl font-bold text-primary mb-2">50+</div>
+                        <p class="text-gray-600 font-medium">Keuzedelen</p>
                     </div>
                     <div class="text-center">
-                        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-white text-2xl font-bold">2</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Maak je keuze</h3>
-                        <p class="text-gray-600">Lees de beschrijvingen en kies het keuzedeel dat bij je past</p>
+                        <div class="text-5xl font-bold text-secondary mb-2">1000+</div>
+                        <p class="text-gray-600 font-medium">Studenten</p>
                     </div>
                     <div class="text-center">
-                        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-white text-2xl font-bold">3</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Schrijf je in</h3>
-                        <p class="text-gray-600">Inschrijven is eenvoudig en snel via het online systeem</p>
+                        <div class="text-5xl font-bold text-accent mb-2">15+</div>
+                        <p class="text-gray-600 font-medium">Opleidingen</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-5xl font-bold text-success mb-2">95%</div>
+                        <p class="text-gray-600 font-medium">Tevredenheid</p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- CTA Section -->
-        <div class="bg-primary text-white py-16">
-            <div class="max-w-4xl mx-auto px-4 text-center">
-                <h2 class="text-3xl font-bold mb-6">Klaar om je keuzedeel te kiezen bij TCR?</h2>
-                <p class="text-xl mb-8">Log nu in en bekijk alle beschikbare keuzedelen voor de komende periode</p>
-                @auth
-                    <a href="{{ route('keuzedelen.index') }}" class="bg-white text-primary px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors inline-flex items-center">
-                        <i class="fas fa-arrow-right mr-2"></i>Bekijk keuzedelen
-                    </a>
-                @else
-                    <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary-hover transition-colors inline-flex items-center">
-                        <i class="fas fa-user-plus mr-2"></i>Nieuw account aanmaken
-                    </a>
-                @endauth
             </div>
         </div>
 
         <!-- Footer -->
-        <footer class="bg-gray-800 text-white py-8">
-            <div class="max-w-7xl mx-auto px-4 text-center">
-                <p>&copy; {{ date('Y') }} Techniek College Rotterdam. Alle rechten voorbehouden.</p>
-                <div class="mt-4 text-sm text-gray-400">
-                    Keuzedeel Systeem - Onderdeel van het onderwijsmanagementsysteem
+        <footer class="bg-gray-900 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-graduation-cap text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold">TCR Keuzedeel Systeem</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">Techniek College Rotterdam</p>
+                    <p class="text-gray-500 text-sm">&copy; {{ date('Y') }} Alle rechten voorbehouden.</p>
                 </div>
             </div>
         </footer>
-
-        <script>
-            // Auto-hide flash messages after 5 seconds
-            setTimeout(() => {
-                const messages = document.querySelectorAll('[class*="bg-green-100"], [class*="bg-red-100"]');
-                messages.forEach(msg => msg.style.display = 'none');
-            }, 5000);
-        </script>
     </body>
 </html>

@@ -13,10 +13,18 @@ class KeuzedeelController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $periods = \App\Models\Period::with(['keuzedelen' => function ($query) {
+        $periods = \App\Models\Period::with(['keuzedelen' => function ($query) use ($user) {
             $query->withCount(['inscriptions' => function ($q) {
                 $q->whereIn('status', ['pending', 'confirmed']);
             }]);
+            
+            // Filter keuzedelen by study program for students
+            if ($user && $user->isStudent()) {
+                $query->where(function ($q) use ($user) {
+                    $q->whereNull('eligible_programs')
+                      ->orWhereJsonContains('eligible_programs', $user->study_program);
+                });
+            }
         }])->active()->get();
 
         $userInscriptions = $user ? $user->inscriptions()->with('keuzdeel.period')->get() : collect();
@@ -187,6 +195,16 @@ class KeuzedeelController extends Controller
                 'reason' => 'al_anders_ingeschreven',
                 'message' => 'Al ingeschreven voor ander keuzedeel',
                 'icon' => 'fa-exchange-alt'
+            ];
+        }
+
+        // Check if keuzedeel is available for user's study program
+        if (!$keuzedeel->isAvailableForStudyProgram($user->study_program)) {
+            return [
+                'available' => false,
+                'reason' => 'verkeerde_opleiding',
+                'message' => 'Niet beschikbaar voor uw opleiding',
+                'icon' => 'fa-book'
             ];
         }
 

@@ -140,14 +140,21 @@
                                                     $availabilityInfo = isset($availabilityReasons[$keuzedeel->id]) ? $availabilityReasons[$keuzedeel->id] : null;
                                                 @endphp
 
-                                                @if($userInscription && $userInscription->status === 'confirmed')
-                                                    <span class="flex-1 bg-green-100 text-green-800 px-4 py-2 rounded-md text-sm font-medium text-center">
-                                                        <i class="fas fa-check mr-2"></i>Ingeschreven
-                                                    </span>
-                                                @elseif($userInscription && $userInscription->status === 'pending')
-                                                    <span class="flex-1 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-md text-sm font-medium text-center">
-                                                        <i class="fas fa-clock mr-2"></i>Wachtlijst
-                                                    </span>
+                                                @if($userInscriptions->where('keuzdeel_id', $keuzedeel->id)->whereIn('status', ['pending', 'confirmed'])->isNotEmpty())
+                                                    <!-- User is enrolled - show cancel button -->
+                                                    <div class="flex-1 flex space-x-2">
+                                                        <span class="flex-1 bg-blue-100 text-blue-800 px-4 py-2 rounded-md text-sm font-medium text-center">
+                                                            <i class="fas fa-check-circle mr-2"></i>
+                                                            {{ $userInscriptions->where('keuzdeel_id', $keuzedeel->id)->first()->status === 'confirmed' ? 'Ingeschreven' : 'Wachtlijst' }}
+                                                        </span>
+                                                        <form action="{{ route('keuzedelen.cancel', $keuzedeel) }}" method="POST" 
+                                                              onsubmit="return confirm('Weet u zeker dat u uw inschrijving wilt annuleren?')">
+                                                            @csrf
+                                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">
+                                                                <i class="fas fa-times mr-2"></i>Annuleren
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 @elseif($availabilityInfo && $availabilityInfo['available'] && $period->isEnrollmentOpen())
                                                     <form action="{{ route('keuzedelen.enroll', $keuzedeel) }}" method="POST" class="flex-1">
                                                         @csrf
@@ -162,8 +169,8 @@
                                                                 'inactief' => 'bg-gray-100 text-gray-800',
                                                                 'inschrijving_gesloten' => 'bg-gray-100 text-gray-800',
                                                                 'al_ingeschreven' => 'bg-blue-100 text-blue-800',
-                                                                'afgerond' => 'bg-blue-100 text-blue-800',
                                                                 'al_anders_ingeschreven' => 'bg-orange-100 text-orange-800',
+                                                                'verkeerde_opleiding' => 'bg-purple-100 text-purple-800',
                                                                 'vol' => 'bg-red-100 text-red-800'
                                                             ];
                                                             $colorClass = $buttonColors[$availabilityInfo['reason']] ?? 'bg-gray-100 text-gray-800';

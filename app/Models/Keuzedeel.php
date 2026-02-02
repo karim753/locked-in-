@@ -22,11 +22,13 @@ class Keuzedeel extends Model
         'teacher_name',
         'schedule_info',
         'credits',
+        'eligible_programs',
     ];
 
     protected $casts = [
         'is_repeatable' => 'boolean',
         'is_active' => 'boolean',
+        'eligible_programs' => 'array',
     ];
 
     public function period()
@@ -91,12 +93,36 @@ class Keuzedeel extends Model
             return false;
         }
 
-        // Check if user has enrollment in period (allow only one keuzedeel per period)
+        // Check if user has enrollment in period (only one keuzedeel per period)
         if ($user->hasEnrollmentInPeriod($this->period_id)) {
             return false;
         }
 
+        // Check if keuzedeel is available for user's study program
+        if (!$this->isAvailableForStudyProgram($user->study_program)) {
+            return false;
+        }
+
+        // Check if keuzedeel is full
+        if ($this->isFull()) {
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * Check if keuzedeel is available for the given study program
+     */
+    public function isAvailableForStudyProgram($studyProgram)
+    {
+        // If no eligible programs are specified, it's available for all programs
+        if (empty($this->eligible_programs)) {
+            return true;
+        }
+
+        // Check if the user's study program is in the eligible programs list
+        return in_array($studyProgram, $this->eligible_programs);
     }
 
     public function scopeActive($query)
